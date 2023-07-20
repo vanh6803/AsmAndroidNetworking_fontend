@@ -4,10 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 
 import com.example.assignment.api.ApiNasa;
-import com.example.assignment.api.RetrofitInstance;
 import com.example.assignment.databinding.ActivityMainBinding;
 import com.example.assignment.models.HackNasa;
 
@@ -37,9 +35,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callApiGetDataFormNasa(String date) {
-        ApiNasa apiNasa = RetrofitInstance.getApiNasa();
 
-        apiNasa.getDataFromNasa("IP5pVaHaWYJXW1YFdrA03mXo4IayAmPLytGphJqi", date).enqueue(new Callback<ApiNasa>() {
+        ApiNasa.apiNasa.getDataFromNasa("IP5pVaHaWYJXW1YFdrA03mXo4IayAmPLytGphJqi", date).enqueue(new Callback<ApiNasa>() {
             @Override
             public void onResponse(Call<ApiNasa> call, Response<ApiNasa> response) {
 //                hackNasa = (HackNasa) response.body();
