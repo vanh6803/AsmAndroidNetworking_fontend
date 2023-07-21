@@ -3,8 +3,8 @@ package com.example.assignment;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
+
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -99,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
         binding.layoutShowData.setVisibility(View.GONE);
 
         binding.btnPushData.setOnClickListener(v -> sendDataToServer());
+
+        binding.btnGetDataFormMyServer.setOnClickListener(v->{
+            startActivity(new Intent(MainActivity.this, DataFromMyServerActivity.class));
+        });
 
     }
 
