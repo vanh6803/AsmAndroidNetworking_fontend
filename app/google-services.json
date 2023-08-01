@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1066010607992",
+    "project_id": "asmandroidnetworking",
+    "storage_bucket": "asmandroidnetworking.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066010607992:android:bf2a8a5c4cdd66feadc88d",
+        "android_client_info": {
+          "package_name": "com.example.assignment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1066010607992-djhtqr2geq78lltgk0id6o9kfn1ct7h4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA3r80uakz7P33L5RuZwxorHjfxltYWg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1066010607992-djhtqr2geq78lltgk0id6o9kfn1ct7h4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
