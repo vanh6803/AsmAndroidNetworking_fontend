@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.assignment.api.ApiMyServer;
@@ -19,6 +20,7 @@ import com.example.assignment.api.ApiNasa;
 import com.example.assignment.api.ApiResponeNasa;
 import com.example.assignment.databinding.ActivityMainBinding;
 import com.example.assignment.models.HackNasa;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -98,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
         binding.btnGetDataFormMyServer.setOnClickListener(v->{
             startActivity(new Intent(MainActivity.this, DataFromMyServerActivity.class));
         });
+        binding.btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(this, "logout success", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        });
 
     }
 
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 binding.tvNotification.setText("get data from Nasa successfully");
                 binding.tvNotification.setTextColor(Color.parseColor("#198754"));
 
-                Log.d("AAA", response.body().toString());
+                Log.d("callApiGetDataFormNasa", response.body().toString());
             }
 
             @Override
@@ -136,12 +143,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-             base64UrlHd = convertUrlToBase64(hackNasa.getHdurl());
+            if (hackNasa.getHdurl() != null) {
+                base64UrlHd = convertUrlToBase64(hackNasa.getHdurl());
+            }else {
+                base64UrlHd ="";
+            }
+
              base64url = convertUrlToBase64(hackNasa.getUrl());
         }
 
-        hackNasa.setHdurl(base64UrlHd);
-        hackNasa.setUrl(base64url);
+            hackNasa.setHdurl(base64UrlHd);
+            hackNasa.setUrl(base64url);
 
         Log.d("sendDataToServer", hackNasa.toString());
         ApiMyServer.apiService.postData(hackNasa).enqueue(new Callback<Void>() {

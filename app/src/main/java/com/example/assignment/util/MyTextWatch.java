@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 public class MyTextWatch implements TextWatcher {
     private EditText editText;
-    private ImageView clearTextButton;
+    private final ImageView clearTextButton;
 
     public MyTextWatch(EditText editText, ImageView clearTextButton) {
         this.editText = editText;

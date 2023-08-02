@@ -9,6 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieAnimationView"
             android:layout_width="wrap_content"
@@ -46,6 +47,13 @@
                     android:hint="Email"
                     android:inputType="textEmailAddress" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/error_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="error"
+                    android:textColor="@color/red" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
@@ -66,38 +74,70 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/border_edt"
-            app:passwordToggleEnabled="true"
             app:layout_constraintEnd_toEndOf="@+id/layout_ed"
             app:layout_constraintStart_toStartOf="@+id/layout_ed"
-            app:layout_constraintTop_toBottomOf="@+id/layout_ed">
+            app:layout_constraintTop_toBottomOf="@+id/layout_ed"
+            app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
+                android:inputType="textPassword" />
 
-                android:inputType="textPassword"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/error_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="error"
+                android:textColor="@color/red" />
 
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_confirm_password_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_edt"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/edt_password_layout"
+            app:layout_constraintStart_toStartOf="@+id/edt_password_layout"
+            app:layout_constraintTop_toBottomOf="@+id/edt_password_layout"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm password"
+                android:inputType="textPassword" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/error_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="error"
+                android:textColor="@color/red" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:id="@+id/layout_forget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginHorizontal="15dp"
-            app:layout_constraintEnd_toEndOf="@+id/edt_password_layout"
-            app:layout_constraintStart_toStartOf="@+id/edt_password_layout"
-            app:layout_constraintTop_toBottomOf="@+id/edt_password_layout">
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="@+id/edt_confirm_password_layout"
+            app:layout_constraintStart_toStartOf="@+id/edt_confirm_password_layout"
+            app:layout_constraintTop_toBottomOf="@+id/edt_confirm_password_layout">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="forgot password"
-                android:gravity="end"/>
+                android:gravity="end"
+                android:text="forgot password" />
 
         </LinearLayout>
 
@@ -120,9 +160,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="create account?"
+            android:text="Create new account?"
             app:layout_constraintEnd_toEndOf="@+id/btn_login"
-            app:layout_constraintHorizontal_bias="0.454"
+            app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="@+id/btn_login"
             app:layout_constraintTop_toBottomOf="@+id/btn_login" />
 
@@ -133,35 +173,12 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            android:background="@drawable/bg_btn"
-            app:layout_constraintEnd_toEndOf="@+id/tv_create_account"
-            app:layout_constraintStart_toStartOf="tv_create_account"
-            app:layout_constraintTop_toBottomOf="@+id/tv_create_account"
-            android:padding="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Login with google"
-                android:layout_centerInParent="true"
-                android:textSize="16sp"/>
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_google"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/btn_login_with_facebook"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:background="@drawable/bg_btn"
             android:orientation="horizontal"
             android:padding="10dp"
-            app:layout_constraintStart_toStartOf="@+id/btn_login_with_google">
+            app:layout_constraintEnd_toEndOf="@+id/tv_create_account"
+            app:layout_constraintStart_toStartOf="@+id/tv_create_account"
+            app:layout_constraintTop_toBottomOf="@+id/tv_create_account">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -175,6 +192,33 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 app:srcCompat="@drawable/ic_google" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/btn_login_with_facebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_btn"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="@id/btn_login_with_google"
+            app:layout_constraintStart_toStartOf="@+id/btn_login_with_google"
+            app:layout_constraintTop_toBottomOf="@id/btn_login_with_google">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Login with google"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                app:srcCompat="@drawable/ic_facbook" />
         </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

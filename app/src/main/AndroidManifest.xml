@@ -32,6 +32,7 @@
             android:name=".MainActivity"
             android:exported="true">
 
+
         </activity>
 
         <meta-data

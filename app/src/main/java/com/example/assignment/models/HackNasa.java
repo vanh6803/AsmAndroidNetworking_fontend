@@ -1,6 +1,8 @@
 package com.example.assignment.models;
 
 public class HackNasa {
+
+    private String _id;
     private String copyright;
     private String date;
     private String explanation;
@@ -13,6 +15,18 @@ public class HackNasa {
     public HackNasa() {
     }
 
+    public HackNasa(String _id, String copyright, String date, String explanation, String hdurl, String media_type, String service_version, String title, String url) {
+        this._id = _id;
+        this.copyright = copyright;
+        this.date = date;
+        this.explanation = explanation;
+        this.hdurl = hdurl;
+        this.media_type = media_type;
+        this.service_version = service_version;
+        this.title = title;
+        this.url = url;
+    }
+
     public HackNasa(String copyright, String date, String explanation, String hdurl, String media_type, String service_version, String title, String url) {
         this.copyright = copyright;
         this.date = date;
@@ -22,6 +36,14 @@ public class HackNasa {
         this.service_version = service_version;
         this.title = title;
         this.url = url;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getCopyright() {
@@ -91,7 +113,8 @@ public class HackNasa {
     @Override
     public String toString() {
         return "HackNasa{" +
-                "copyright='" + copyright + '\'' +
+                "_id='" + _id + '\'' +
+                ", copyright='" + copyright + '\'' +
                 ", date='" + date + '\'' +
                 ", explanation='" + explanation + '\'' +
                 ", hdurl='" + hdurl + '\'' +
