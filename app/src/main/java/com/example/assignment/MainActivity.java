@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //push list data
     private void pushDataListToServer(List<HackNasa> dataList) {
         ExecutorService executor = Executors.newFixedThreadPool(dataList.size());
 

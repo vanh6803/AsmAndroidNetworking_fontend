@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.example.assignment.R;
 import com.example.assignment.api.ApiMyServer;
 import com.example.assignment.databinding.DialogDetailBinding;
+import com.example.assignment.databinding.DialogEditDataBinding;
 import com.example.assignment.databinding.LayoutItemDataBinding;
 import com.example.assignment.models.ApiResponseData;
 import com.example.assignment.models.HackNasa;
@@ -71,9 +73,56 @@ public class HackNasaAdapter extends RecyclerView.Adapter<HackNasaAdapter.HackNa
 
         holder.itemSelected.setOnClickListener(v->{
             Log.d("AAA", obj.get_id());
-            CallApi(obj.get_id());
+            CallApiDetail(obj.get_id());
         });
 
+        holder.itemSelected.setOnLongClickListener(view -> {
+
+            Dialog dialog = new Dialog(context);
+            DialogEditDataBinding binding = DialogEditDataBinding.inflate(LayoutInflater.from(context));
+            dialog.setContentView(binding.getRoot());
+
+            Window window = dialog.getWindow();
+            window.setLayout(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawableResource(R.color.trans);
+
+            binding.edtTitle.setText(obj.getTitle());
+            binding.edtServiceVersion.setText(obj.getService_version());
+            binding.edtExplanation.setText(obj.getExplanation());
+
+            binding.btnCancel.setOnClickListener(v->dialog.dismiss());
+
+            binding.btnSave.setOnClickListener(v->{
+                obj.setTitle(binding.edtTitle.getText().toString());
+                obj.setService_version(binding.edtServiceVersion.getText().toString());
+                obj.setExplanation(binding.edtExplanation.getText().toString());
+                callApiUpdate(obj.get_id(), obj);
+                dialog.dismiss();
+            });
+
+            dialog.show();
+
+            return false;
+        });
+
+    }
+
+    //call api update
+    private void callApiUpdate(String id, HackNasa obj) {
+        ApiMyServer.apiService.updateData(id, obj).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(context, "update success", Toast.LENGTH_SHORT).show();
+                    notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "update failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -107,6 +156,7 @@ public class HackNasaAdapter extends RecyclerView.Adapter<HackNasaAdapter.HackNa
         return newUrl;
     }
 
+    //show dialog details
     @SuppressLint("SetTextI18n")
     private void showDialog(HackNasa obj){
         Dialog dialog = new Dialog(context);
@@ -132,7 +182,7 @@ public class HackNasaAdapter extends RecyclerView.Adapter<HackNasaAdapter.HackNa
         dialog.show();
     }
 
-    private void CallApi(String id){
+    private void CallApiDetail(String id){
         ApiMyServer.apiService.getDataDetail(id).enqueue(new Callback<ApiResponseData>() {
             @Override
             public void onResponse(Call<ApiResponseData> call, Response<ApiResponseData> response) {

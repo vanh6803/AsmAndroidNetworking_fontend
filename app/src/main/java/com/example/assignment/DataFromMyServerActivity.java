@@ -103,4 +103,10 @@ public class DataFromMyServerActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 }
