@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 
 import android.graphics.Color;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.assignment.adapter.AdapterListDataFromNasa;
+import com.example.assignment.adapter.HackNasaAdapter;
 import com.example.assignment.api.ApiMyServer;
 import com.example.assignment.api.ApiNasa;
 import com.example.assignment.api.ApiResponeNasa;
@@ -25,7 +28,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
     private ApiNasa apiNasa;
     String base64UrlHd;
     String base64url;
-
     private String dateSelected, daySelected, monthSelected, yearSelected;
+
+    private List<HackNasa> list;
+    private AdapterListDataFromNasa adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
 
+        // -------------select day - month - year-------------
         List<String> days = new ArrayList<>();
 
         for (int i = 1; i <= 31; i++) {
@@ -90,16 +102,31 @@ public class MainActivity extends AppCompatActivity {
         binding.spnDate.setOnItemSelectedListener(new CustomOnItemSelectedListener());
         binding.spnYear.setOnItemSelectedListener(new CustomOnItemSelectedListener());
         binding.spnMonth.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+        //----------------------------------------------------------------
 
+        //clicked call api
         binding.btnGetDataFormNasa.setOnClickListener(v -> callApiGetDataFormNasa(API_KEY, dateSelected));
 
+        //gone layout
         binding.layoutShowData.setVisibility(View.GONE);
 
+        // clicked push data to my server
         binding.btnPushData.setOnClickListener(v -> sendDataToServer());
 
+        //next screen
         binding.btnGetDataFormMyServer.setOnClickListener(v->{
             startActivity(new Intent(MainActivity.this, DataFromMyServerActivity.class));
         });
+
+
+        //clicked get list data from nasa
+        list = new ArrayList<>();
+        adapter = new AdapterListDataFromNasa(this);
+        binding.btnGetListDataFormNasa.setOnClickListener(v ->getListDataFromNasa());
+
+        binding.btnPushListData.setOnClickListener(v->pushDataListToServer(list));
+
+        //logout
         binding.btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(this, "logout success", Toast.LENGTH_SHORT).show();
@@ -108,6 +135,139 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void pushDataListToServer(List<HackNasa> dataList) {
+        ExecutorService executor = Executors.newFixedThreadPool(dataList.size());
+
+        for (HackNasa data : dataList) {
+            executor.submit(() -> {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    String hdurl = data.getHdurl();
+                    String base64UrlHd = "";
+                    if (hdurl != null) {
+                        base64UrlHd = convertUrlToBase64(hdurl);
+                        data.setHdurl(base64UrlHd);
+                    }
+
+                    String url = data.getUrl();
+                    String base64url = "";
+                    if (url != null) {
+                        base64url = convertUrlToBase64(url);
+                        data.setUrl(base64url);
+                    }
+                }
+
+                ApiMyServer.apiService.postData(data).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d("API", t.getMessage());
+                    }
+                });
+            });
+        }
+
+        executor.shutdown();
+
+        binding.tvNotification.setText("push list data success");
+    }
+
+    // Gọi API để lấy dữ liệu từ NASA và lưu vào danh sách
+    private void cloneCallApiGetDataFormNasa(String api_key, String date) {
+        apiNasa = ApiResponeNasa.getApiNasa();
+        apiNasa.getDataFromNasa(api_key, date).enqueue(new Callback<HackNasa>() {
+            @Override
+            public void onResponse(Call<HackNasa> call, Response<HackNasa> response) {
+                HackNasa hackNasa = response.body();
+                if (hackNasa != null) {
+                    list.add(hackNasa); // Lưu dữ liệu vào danh sách
+                    adapter.notifyDataSetChanged(); // Thông báo cho RecyclerView cập nhật dữ liệu
+                }
+            }
+
+            @Override
+            public void onFailure(Call<HackNasa> call, Throwable t) {
+                Log.d("EEE", t.getMessage());
+            }
+        });
+    }
+
+
+    //get list data from nasa
+    private void getListDataFromNasa() {
+        list.clear();
+        adapter.notifyDataSetChanged();
+
+        // Tính toán ngày cách đây 10 ngày
+        Calendar endDate = Calendar.getInstance();
+        endDate.add(Calendar.DAY_OF_MONTH, -10);
+        String endDateString = formatDate(endDate.getTime());
+
+        // Tạo danh sách các ngày từ ngày hiện tại đến 10 ngày trước đó
+        List<String> datesToCallApi = new ArrayList<>();
+        Calendar tempDate = Calendar.getInstance();
+        while (tempDate.after(endDate)) {
+            datesToCallApi.add(formatDate(tempDate.getTime()));
+            tempDate.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        // Kiểm tra nếu không có ngày nào để gọi API
+        if (datesToCallApi.isEmpty()) {
+            // Xử lý trường hợp khi không có dữ liệu để gọi API
+            // Ví dụ, hiển thị thông báo hoặc cập nhật giao diện người dùng để thông báo không có dữ liệu.
+            Toast.makeText(this, "Không có dữ liệu.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Tạo ExecutorService để quản lý các luồng
+        ExecutorService executor = Executors.newFixedThreadPool(datesToCallApi.size());
+
+        // Tạo danh sách các Future object để lưu kết quả của mỗi cuộc gọi API
+        List<Future<HackNasa>> futures = new ArrayList<>();
+
+        // Bắt đầu các cuộc gọi API trong các luồng
+        for (String date : datesToCallApi) {
+            binding.tvNotification.setText("calling api ...");
+            Future<HackNasa> future = (Future<HackNasa>) executor.submit(() -> cloneCallApiGetDataFormNasa(API_KEY, date));
+            futures.add(future);
+        }
+
+        // Đợi tất cả các luồng hoàn thành và thu thập kết quả
+        for (Future<HackNasa> future : futures) {
+            try {
+                HackNasa result = future.get();
+                if (result != null) {
+                    list.add(result);
+                    runOnUiThread(() -> adapter.notifyDataSetChanged());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Tắt ExecutorService
+        executor.shutdown();
+
+        binding.tvNotification.setText("get list data success");
+
+        binding.rcv.setVisibility(View.VISIBLE);
+        adapter.setData(list);
+        binding.rcv.setAdapter(adapter);
+    }
+
+
+    // Helper method to format date as "yyyy-MM-dd"
+    private String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return dateFormat.format(date);
+    }
+
+
+
+    //call api to get data from api nasa
     private void callApiGetDataFormNasa(String api_key, String date) {
         apiNasa = ApiResponeNasa.getApiNasa();
         apiNasa.getDataFromNasa(api_key, date).enqueue(new Callback<HackNasa>() {
@@ -131,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<HackNasa> call, Throwable t) {
-                binding.layoutShowData.setVisibility(View.GONE);
+    
                 Log.d("EEE", t.getMessage());
                 binding.tvNotification.setText("get data from Nasa failed");
                 binding.tvNotification.setTextColor(Color.RED);
@@ -139,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // push data to my server
     private void sendDataToServer() {
 
 
@@ -172,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    // convert string url to base64
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String convertUrlToBase64(String url) {
         byte[] byteInput = url.getBytes();
@@ -181,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
         return encodedString;
     }
 
+    // listener item selected from spinner
     private class CustomOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

@@ -23,9 +23,10 @@
 
        <Button
            android:id="@+id/btn_get_data_form_nasa"
-           android:layout_width="wrap_content"
+           android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_marginTop="20dp"
+           android:layout_marginHorizontal="20dp"
            android:text="Get data from Nasa"
            app:layout_constraintEnd_toEndOf="parent"
            app:layout_constraintHorizontal_bias="0.493"
@@ -33,26 +34,52 @@
            app:layout_constraintTop_toBottomOf="@+id/tv_notification" />
 
        <Button
-           android:id="@+id/btn_push_data"
-           android:layout_width="wrap_content"
+           android:id="@+id/btn_get_list_data_form_nasa"
+           android:layout_width="match_parent"
            android:layout_height="wrap_content"
-           android:layout_marginTop="8dp"
-           android:text="push data to my server"
+           android:layout_marginTop="10dp"
+           android:layout_marginHorizontal="20dp"
+           android:text="Get list data from Nasa"
            app:layout_constraintEnd_toEndOf="parent"
-           app:layout_constraintHorizontal_bias="0.497"
+           app:layout_constraintHorizontal_bias="0.493"
            app:layout_constraintStart_toStartOf="parent"
            app:layout_constraintTop_toBottomOf="@+id/btn_get_data_form_nasa" />
 
        <Button
-           android:id="@+id/btn_get_data_form_my_server"
-           android:layout_width="wrap_content"
+           android:id="@+id/btn_push_data"
+           android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_marginTop="8dp"
-           android:text="Get data form my server"
+           android:layout_marginHorizontal="20dp"
+           android:text="push data to my server"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintHorizontal_bias="0.497"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/btn_get_list_data_form_nasa" />
+
+       <Button
+           android:id="@+id/btn_push_list_data"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="8dp"
+           android:layout_marginHorizontal="20dp"
+           android:text="push list data to my server"
            app:layout_constraintEnd_toEndOf="parent"
            app:layout_constraintHorizontal_bias="0.497"
            app:layout_constraintStart_toStartOf="parent"
            app:layout_constraintTop_toBottomOf="@+id/btn_push_data" />
+
+       <Button
+           android:id="@+id/btn_get_data_form_my_server"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="8dp"
+           android:layout_marginHorizontal="20dp"
+           android:text="Get data form my server"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintHorizontal_bias="0.497"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/btn_push_list_data" />
 
        <Button
            android:id="@+id/btn_logout"
@@ -134,6 +161,18 @@
            </LinearLayout>
 
        </androidx.cardview.widget.CardView>
+
+       <androidx.recyclerview.widget.RecyclerView
+           android:id="@+id/rcv"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           tools:listitem="@layout/layout_item_data"
+           android:padding="10dp"
+           app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+           android:orientation="vertical"
+           app:layout_constraintTop_toBottomOf="@id/layout_show_data"
+           app:layout_constraintLeft_toLeftOf="@id/layout_show_data"
+           app:layout_constraintRight_toRightOf="@id/layout_show_data"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
 
 

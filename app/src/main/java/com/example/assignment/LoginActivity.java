@@ -108,8 +108,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-
     private void signup() {
         String email = binding.edtEmail.getText().toString();
         String password = binding.edtPassword.getText().toString();
@@ -250,6 +248,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(intent, RC_SIGN_IN);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
