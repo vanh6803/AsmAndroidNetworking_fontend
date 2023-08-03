@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private List<HackNasa> list;
     private AdapterListDataFromNasa adapter;
 
-    private String host= "9.184.218.151" ;
+    private String host= "21.98.225.248" ;
     private int port = 8080;
     private Socket socket;
     private BufferedReader input;
@@ -76,17 +76,15 @@ public class MainActivity extends AppCompatActivity {
 
         hackNasa = new HackNasa();
 
-        if (!isConnected){
-            connectToServer("9.184.218.151", 8080);
-            Toast.makeText(this, " connect to server success", Toast.LENGTH_SHORT).show();
-        }
+
         initViews();
     }
 
     private void initViews() {
-
-
-
+        if (!isConnected){
+            connectToServer(host,port);
+            Toast.makeText(this, " connect to server success", Toast.LENGTH_SHORT).show();
+        }
         // -------------select day - month - year-------------
         List<String> days = new ArrayList<>();
 
@@ -140,11 +138,30 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //clicked get list data from nasa
+
         list = new ArrayList<>();
         adapter = new AdapterListDataFromNasa(this);
-        binding.btnGetListDataFormNasa.setOnClickListener(v ->getListDataFromNasa(10));
+        //select thread
+        List<Integer> threads = new ArrayList<>();
+        for (int i = 1; i <=31; i++){
+            threads.add(i);
+        }
+        ArrayAdapter<Integer> threadsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, threads);
+        threadsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.selectThread.setAdapter(threadsAdapter);
+        binding.selectThread.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(MainActivity.this, ""+i, Toast.LENGTH_SHORT).show();
+                //clicked get list data from nasa
+                binding.btnGetListDataFormNasa.setOnClickListener(v ->getListDataFromNasa(i));
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         // push list data to my server
         binding.btnPushListData.setOnClickListener(v->{
             pushDataListToServer(list);
