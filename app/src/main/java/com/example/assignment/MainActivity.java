@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +27,11 @@ import com.example.assignment.databinding.ActivityMainBinding;
 import com.example.assignment.models.HackNasa;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -53,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private List<HackNasa> list;
     private AdapterListDataFromNasa adapter;
 
+    private String host= "9.184.218.151" ;
+    private int port = 8080;
+    private Socket socket;
+    private BufferedReader input;
+    private PrintWriter output;
+    private boolean isConnected = false;
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,10 +76,16 @@ public class MainActivity extends AppCompatActivity {
 
         hackNasa = new HackNasa();
 
+        if (!isConnected){
+            connectToServer("9.184.218.151", 8080);
+            Toast.makeText(this, " connect to server success", Toast.LENGTH_SHORT).show();
+        }
         initViews();
     }
 
     private void initViews() {
+
+
 
         // -------------select day - month - year-------------
         List<String> days = new ArrayList<>();
@@ -122,9 +143,19 @@ public class MainActivity extends AppCompatActivity {
         //clicked get list data from nasa
         list = new ArrayList<>();
         adapter = new AdapterListDataFromNasa(this);
-        binding.btnGetListDataFormNasa.setOnClickListener(v ->getListDataFromNasa());
+        binding.btnGetListDataFormNasa.setOnClickListener(v ->getListDataFromNasa(10));
 
-        binding.btnPushListData.setOnClickListener(v->pushDataListToServer(list));
+        // push list data to my server
+        binding.btnPushListData.setOnClickListener(v->{
+            pushDataListToServer(list);
+            int message = list.size();
+            if (isConnected){
+                sendMessageToServer(message);
+                Toast.makeText(this, "send message success", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(this, "Please connect to server first", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //logout
         binding.btnLogout.setOnClickListener(v -> {
@@ -134,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
 
     //push list data
     private void pushDataListToServer(List<HackNasa> dataList) {
@@ -174,6 +207,9 @@ public class MainActivity extends AppCompatActivity {
         executor.shutdown();
 
         binding.tvNotification.setText("push list data success");
+        binding.tvNotification.setTextColor(Color.parseColor("#198754"));
+
+
     }
 
     // Gọi API để lấy dữ liệu từ NASA và lưu vào danh sách
@@ -198,13 +234,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     //get list data from nasa
-    private void getListDataFromNasa() {
+    private void getListDataFromNasa(int numberThreads) {
         list.clear();
         adapter.notifyDataSetChanged();
 
         // Tính toán ngày cách đây 10 ngày
         Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.DAY_OF_MONTH, -10);
+        endDate.add(Calendar.DAY_OF_MONTH, -numberThreads);
         String endDateString = formatDate(endDate.getTime());
 
         // Tạo danh sách các ngày từ ngày hiện tại đến 10 ngày trước đó
@@ -253,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
         executor.shutdown();
 
         binding.tvNotification.setText("get list data success");
+        binding.tvNotification.setTextColor(Color.parseColor("#198754"));
 
         binding.rcv.setVisibility(View.VISIBLE);
         adapter.setData(list);
@@ -360,6 +397,35 @@ public class MainActivity extends AppCompatActivity {
         public void onNothingSelected(AdapterView<?> parent) {
 
         }
+    }
+
+    //send number image saved
+    private void sendMessageToServer(int message) {
+        if (output!=null){
+            new Thread(()->{
+                output.println(message);
+            }).start();
+        }
+    }
+
+    //connect to server socket
+    private void connectToServer(String host, int port) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socket = new Socket(host, port);
+                    input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    output = new PrintWriter(socket.getOutputStream(), true);
+                    handler.post(()->{
+                        Toast.makeText(MainActivity.this, "connect to app socket success", Toast.LENGTH_SHORT).show();
+                        isConnected = true;
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
     }
 
 }
