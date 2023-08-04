@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private List<HackNasa> list;
     private AdapterListDataFromNasa adapter;
 
-    private String host= "21.98.225.248" ;
+    private String host= "192.168.137.229" ;
     private int port = 8080;
     private Socket socket;
     private BufferedReader input;
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new AdapterListDataFromNasa(this);
         //select thread
         List<Integer> threads = new ArrayList<>();
-        for (int i = 1; i <=31; i++){
+        for (int i = 0; i <=31; i++){
             threads.add(i);
         }
         ArrayAdapter<Integer> threadsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, threads);
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         endDate.add(Calendar.DAY_OF_MONTH, -numberThreads);
         String endDateString = formatDate(endDate.getTime());
 
-        // Tạo danh sách các ngày từ ngày hiện tại đến 10 ngày trước đó
+        // Tạo danh sách các ngày từ ngày hiện tại đến ngày đc chọn ngày trước đó
         List<String> datesToCallApi = new ArrayList<>();
         Calendar tempDate = Calendar.getInstance();
         while (tempDate.after(endDate)) {
